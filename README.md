@@ -86,8 +86,9 @@ inefficiencies in the functions as well. You can also make a note of those and
 fix those inefficiencies.
 
 # Ground Rules
-In order to start working on the assignment, you need to fork this project to
-your personal space. Once that is done, please make your project private and add
-@miko.ai to your project as a _Reporter_.
+In order to start working on the assignment, you need to [fork this
+project](https://gitlab.com/miko.ai/cam-grabber/-/forks/new) to your personal
+space. Once that is done, please make your project private and add @miko.ai to
+your project as a _Reporter_.
 
 For any queries, you can tag @miko.ai in any issues on your project.
