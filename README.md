@@ -1,93 +1,93 @@
-# Cam Grabber
+# An exercise in application latency
 
+In typical AI/Robotics applications images from a camera are used for techniques
+like object-detection, mapping, obstacle avoidance, etc. In such applications,
+it is necessary that each of the modules is able to free the common compute
+resources as soon as possible. It is also necessary that the common variables
+shared between the modules are appropriately access-protected.
 
+The application in this repository is an over-simplification of the same and is
+intended to validate some basic coding skills to improve latency.
 
-## Getting started
+ ## Description of the application
+ The application in this repository consists of three modules
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### Cam
+This module is responsible for grabbing images from an onboard camera. This
+module would return an image in the form of an `std::vector<unsigned int>`. This
+module should be able to grab images at `20 fps (50 ms)`.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+The `run(...)` function is to be called for the module to grab the image and
+return it. Called in isolation, it should be able to run every `50ms`.
 
-## Add your files
+### AI
+This module analyses the image and would run some AI routines on it. To emulate
+the computation load, the `run(...)` function would sleep for `200ms`.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+### Navigation
+This module would use the image for navigation, mapping and obstacle avoidance.
+To emulate the computation load, the `run(...)` function would sleep for
+`100ms`.
+
+## Building the application
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.com/miko.ai/cam-grabber.git
-git branch -M main
-git push -uf origin main
+$ mkdir build && cd build
+$ cmake ..
+$ make
 ```
 
-## Integrate with your tools
+## Running the application
 
-- [ ] [Set up project integrations](https://gitlab.com/miko.ai/cam-grabber/-/settings/integrations)
+```
+$ cd build
+$ ./cam_grabber
+```
 
-## Collaborate with your team
+## Issues in the application
+Due to a badly written code, the application fails to do what it is supposed to
+do as per the above sections.
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+If you run the application as-is, below is the output that you should expect
 
-## Test and Deploy
+```
+[Nav]: Time since last execution: 357.548 ms
+[AI ]: Time since last execution: 353.589 ms
+[Cam]: Time since last execution: 353.485 ms
+[Nav]: Time since last execution: 354.102 ms
+[AI ]: Time since last execution: 354.161 ms
+[Cam]: Time since last execution: 354.172 ms
+...
+...
+```
 
-Use the built-in continuous integration in GitLab.
+This is an issue because the camera module is no longer able to capture images
+at the required `20fps` and the navigation module is not able to run at its
+required `100ms` rate. This will lead to a very sluggish application.
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Assignment
+Your job is to refactor certain parts of the code such that the expected output
+looks like below.
 
-***
+```
+[Cam]: Time since last execution: 5x.xxx ms
+[Cam]: Time since last execution: 5x.xxx ms
+[Nav]: Time since last execution: 10x.xxx ms
+[Cam]: Time since last execution: 5x.xxx ms
+[Cam]: Time since last execution: 5x.xxx ms
+[Nav]: Time since last execution: 10x.xxx ms
+[AI ]: Time since last execution: 20x.xxx ms
+...
+...
+```
 
-# Editing this README
+During the course of this task, you might also notice that there are some other
+inefficiencies in the functions as well. You can also make a note of those and
+fix those inefficiencies.
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+# Ground Rules
+In order to start working on the assignment, you need to fork this project to
+your personal space. Once that is done, please make your project private and add
+@miko.ai to your project as a _Reporter_.
 
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+For any queries, you can tag @miko.ai in any issues on your project.
