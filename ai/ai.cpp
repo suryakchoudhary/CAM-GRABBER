@@ -4,6 +4,7 @@ namespace ai {
 double t_prev = common::get_timer_ticks();
 
 void run(std::vector<unsigned int> image, std::mutex &m, bool &done) {
+  while (1) {
   done = false;
   {
     std::unique_lock<std::mutex> lk(m);
@@ -13,5 +14,6 @@ void run(std::vector<unsigned int> image, std::mutex &m, bool &done) {
   t_prev = common::get_timer_ticks();
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
   done = true;
+}
 }
 }  // namespace ai
